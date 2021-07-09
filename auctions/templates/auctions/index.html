@@ -3,5 +3,16 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    <ul>
+        {% for listing in auction_listings %}
+            <li>
+                <h3>{{ listing.title }}</h3>
+                <p>{{ listing.description }}</p>
+                <p>{{ listing.starting_bid }}</p>
+            </li>
+        {% empty %}
+            <li>No active listings</li>
+        {% endfor %}
+    </ul>
+
 {% endblock %}

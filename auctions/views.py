@@ -15,14 +15,20 @@ def index(request):
     For each active listing, this page should display (at minimum)
     the title, description, current price, and photo (if one exists for the listing)
     """
-    return render(request, "auctions/index.html")
+    auction_listings = AuctionListing.objects.all()
+    return render(request, "auctions/index.html", {
+        "auction_listings": auction_listings
+    })
 
 
 def categories(request):
     # List all the categories. Clicking on the name of any category
     # should take the user to a page that displays all fo the active listings
     # in that category
-    return render(request, "auctions/index.html")
+    auction_listings = AuctionListing.objects.all()
+    return render(request, "auctions/index.html", {
+        "auction_listings": auction_listings
+    })
 
 
 @login_required(login_url='auctions/login.html')
@@ -38,23 +44,32 @@ def create_listing(request):
             starting_bid = request.POST['starting_bid']
             image = request.POST['image']
             category = request.POST['category']
-            listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category)
-            listing.save()
-            return render(request, "auctions/index.html")
+            auction_listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category)
+            auction_listing.save()
+            auction_listings = AuctionListing.objects.all()
+            return render(request, "auctions/index.html", {
+                "auction_listings": auction_listings
+            })
     else:
         form = ListingForm()
     return render(request, 'auctions/new_listing.html', {
         'form': form
     })
 
-    return render(request, "auctions/index.html")
+    auction_listings = AuctionListing.objects.all()
+    return render(request, "auctions/index.html", {
+        "auction_listings": auction_listings
+    })
 
 
 def listing(request):
     """
     Users should be able to view all details about the listing, including current listing price
     """
-    return render(request, "auctions/index.html")
+    auction_listings = AuctionListing.objects.all()
+    return render(request, "auctions/index.html", {
+        "auction_listings": auction_listings
+    })
 
 
 def watchlist(request):
@@ -62,7 +77,10 @@ def watchlist(request):
     Display all of the listings that a user has added to their watchlist.
     Clicking on any of those listings should take the user to that listing's page.
     """
-    return render(request, "auctions/index.html")
+    auction_listings = AuctionListing.objects.all()
+    return render(request, "auctions/index.html", {
+        "auction_listings": auction_listings
+    })
 
 
 def login_view(request):
