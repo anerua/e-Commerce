@@ -1,10 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, AuctionListing
+from .forms import ListingForm
 
 
 def index(request):
@@ -23,10 +25,28 @@ def categories(request):
     return render(request, "auctions/index.html")
 
 
+@login_required(login_url='auctions/login.html')
 def create_listing(request):
     # Form to create a listing. Specify title, text-based description, and starting bid.
     # Optionally can provide a URL for an image for the listing
     # and/or a category (e.g. Fashion, Toys, Electronics, Home, etc)
+    if request.method == 'POST':
+        form = ListingForm(request.POST)
+        if form.is_valid():
+            title = request.POST['title']
+            description = request.POST['description']
+            starting_bid = request.POST['starting_bid']
+            image = request.POST['image']
+            category = request.POST['category']
+            listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category)
+            listing.save()
+            return render(request, "auctions/index.html")
+    else:
+        form = ListingForm()
+    return render(request, 'auctions/new_listing.html', {
+        'form': form
+    })
+
     return render(request, "auctions/index.html")
 
 

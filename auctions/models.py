@@ -6,8 +6,15 @@ class User(AbstractUser):
     pass
 
 
-class AuctionListing():
-    pass
+class AuctionListing(models.Model):
+    title = models.CharField(max_length=64)
+    description = models.TextField()
+    starting_bid = models.IntegerField()
+    image = models.URLField()
+    category = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"{self.title}"
 
 
 class Bid():
