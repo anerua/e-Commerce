@@ -22,12 +22,17 @@ def index(request):
 
 
 def categories(request):
-    # List all the categories. Clicking on the name of any category
-    # should take the user to a page that displays all fo the active listings
-    # in that category
-    auction_listings = AuctionListing.objects.all()
-    return render(request, "auctions/index.html", {
-        "auction_listings": auction_listings
+    avail_categories = AuctionListing.objects.values_list('category', flat=True).distinct().order_by()
+    return render(request, "auctions/categories.html", {
+        "categories": avail_categories
+    })
+
+
+def category_listing(request, category):
+    avail_listings = AuctionListing.objects.filter(category=category)
+    return render(request, "auctions/category_listing.html", {
+        "category": category,
+        "avail_listings": avail_listings
     })
 
 
