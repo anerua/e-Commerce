@@ -6,12 +6,13 @@
     <ul>
         {% for listing in auction_listings %}
             <li>
-                <h3>{{ listing.title }}</h3>
+                <h3><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h3>
                 <p>
                     <em>Description:</em> {{ listing.description }}<br>
                     <em>Starting Bid:</em> ${{ listing.starting_bid}}<br>
                     <em>Image Link:</em> {{ listing.image }}<br>
-                    <em>Category:</em> {{ listing.category }}
+                    <em>Category:</em> {{ listing.category }}<br>
+                    <em>Seller:</em> {{ listing.seller }}
                 </p>
             </li>
         {% empty %}

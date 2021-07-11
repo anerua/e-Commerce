@@ -12,6 +12,7 @@ class AuctionListing(models.Model):
     starting_bid = models.IntegerField()
     image = models.URLField()
     category = models.CharField(max_length=64)
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="goods")
 
     def __str__(self):
         return f"{self.title}"

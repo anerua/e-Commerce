@@ -49,7 +49,8 @@ def create_listing(request):
             starting_bid = request.POST['starting_bid']
             image = request.POST['image']
             category = request.POST['category']
-            auction_listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category)
+            seller = request.user
+            auction_listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category, seller=seller)
             auction_listing.save()
             auction_listings = AuctionListing.objects.all()
             return render(request, "auctions/index.html", {
@@ -67,13 +68,13 @@ def create_listing(request):
     })
 
 
-def listing(request):
+def listing(request, listing_id):
     """
     Users should be able to view all details about the listing, including current listing price
     """
-    auction_listings = AuctionListing.objects.all()
-    return render(request, "auctions/index.html", {
-        "auction_listings": auction_listings
+    item = AuctionListing.objects.get(pk=listing_id)
+    return render(request, "auctions/listing.html", {
+        "listing": item
     })
 
 
