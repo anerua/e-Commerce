@@ -68,13 +68,24 @@ def create_listing(request):
     })
 
 
-def listing(request, listing_id):
+def listing(request, listing_id, watching=0):
     """
     Users should be able to view all details about the listing, including current listing price
     """
     item = AuctionListing.objects.get(pk=listing_id)
+    if request.method == 'POST':
+        if watching:
+            request.user.watchlist.remove(item)
+            watching = not watching
+        else:
+            request.user.watchlist.add(item)
+            watching = not watching
+    else:
+        if request.user.is_authenticated:
+            watching = (item in request.user.watchlist.all())
     return render(request, "auctions/listing.html", {
-        "listing": item
+        "listing": item,
+        "watching": int(watching)
     })
 
 

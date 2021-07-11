@@ -5,6 +5,16 @@
     <p>
         {{ listing.image }}
     </p>
+    {% if user.is_authenticated %}
+        <form action="{% url 'listing' listing_id=listing.id watching=watching %}" method="post">
+            {% csrf_token %}
+            {% if watching %}
+                <input class="btn btn-primary" type="submit" value="Remove from watchlist">
+            {% else %}
+                <input class="btn btn-primary" type="submit" value="Add to watchlist">
+            {% endif %}
+        </form>
+    {% endif %}
     <p>
         <h4>Description</h4>
         {{ listing.description }}
