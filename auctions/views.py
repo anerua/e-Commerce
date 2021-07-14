@@ -5,8 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, AuctionListing, Bid
-from .forms import ListingForm, BiddingForm
+from .models import User, AuctionListing, Bid, Comment
+from .forms import ListingForm, BiddingForm, CommentForm
 
 
 def index(request):
@@ -75,22 +75,23 @@ def listing(request, listing_id, watching=0):
     """
     Users should be able to view all details about the listing, including current listing price
     """
-    item = AuctionListing.objects.get(pk=listing_id)
+    current_listing = AuctionListing.objects.get(pk=listing_id)
     if request.method == 'POST':
         if watching:
-            request.user.watchlist.remove(item)
+            request.user.watchlist.remove(current_listing)
             watching = not watching
         else:
-            request.user.watchlist.add(item)
+            request.user.watchlist.add(current_listing)
             watching = not watching
     else:
         if request.user.is_authenticated:
-            watching = (item in request.user.watchlist.all())
-    form = BiddingForm()
+            watching = (current_listing in request.user.watchlist.all())
     return render(request, "auctions/listing.html", {
-        "listing": item,
+        "listing": current_listing,
         "watching": int(watching),
-        "form": form,
+        "bidding_form": BiddingForm(),
+        "comment_form": CommentForm(),
+        "comments": current_listing.comments.all(),
         "error_bid": False
     })
 
@@ -109,13 +110,50 @@ def create_bid(request, listing_id):
             current_listing.save()
         else:
             error_bid = True
-    form = BiddingForm()
+
     return render(request, "auctions/listing.html", {
         "listing": current_listing,
         "watching": int(watching),
-        "form": form,
+        "bidding_form": BiddingForm(),
+        "comment_form": CommentForm(),
+        "comments": current_listing.comments.all(),
         "error_bid": error_bid
     })
+
+
+def close_bid(request, listing_id):
+    current_listing = AuctionListing.objects.get(pk=listing_id)
+    watching = (current_listing in request.user.watchlist.all())
+    if request.method == 'POST':
+        current_listing.active = False
+        current_listing.save()
+
+    return render(request, "auctions/listing.html", {
+        "listing": current_listing,
+        "watching": int(watching),
+        "bidding_form": BiddingForm(),
+        "comment_form": CommentForm(),
+        "comments": current_listing.comments.all(),
+        "error_bid": False
+    })        
+
+
+def comment(request, listing_id):
+    current_listing = AuctionListing.objects.get(pk=listing_id)
+    watching = (current_listing in request.user.watchlist.all())
+    if request.method == 'POST':
+        new_comment = Comment(author=request.user, message=request.POST['message'])
+        new_comment.save()
+        current_listing.comments.add(new_comment)
+
+    return render(request, "auctions/listing.html", {
+        "listing": current_listing,
+        "watching": int(watching),
+        "bidding_form": BiddingForm(),
+        "comment_form": CommentForm(),
+        "comments": current_listing.comments.all(),
+        "error_bid": False
+    })        
 
 
 def watchlist(request):

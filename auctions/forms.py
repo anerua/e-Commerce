@@ -10,3 +10,7 @@ class ListingForm(forms.Form):
 
 class BiddingForm(forms.Form):
     new_bid = forms.IntegerField(label='Your Bid')
+
+
+class CommentForm(forms.Form):
+    message = forms.CharField(label='Your comment')

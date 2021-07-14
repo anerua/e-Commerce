@@ -14,6 +14,22 @@
                 <input class="btn btn-primary" type="submit" value="Add to watchlist">
             {% endif %}
         </form>
+        {% if listing.active %}
+            {% if user == listing.seller %}
+            <p>
+                <form action="{% url 'close_bid' listing.id %}" method="POST">
+                    {% csrf_token %}
+                    <input class="btn btn-primary" type="submit" value="Close Listing">
+                </form>
+            </p>
+            {% endif %}
+        {% else %}
+                <p>Listing closed. 
+                    {% if user == listing.current_price.bidder %}
+                        You won this bid.
+                    {% endif %}
+                </p>
+        {% endif %}
     {% endif %}
     <p>
         <h4>Description</h4>
@@ -23,16 +39,19 @@
         <h4>Current Price</h4>
         ${{ listing.current_price.bid }}
     </p>
-    <p>
-        <form action="{% url 'create_bid' listing.id %}" method="post">
-            {% csrf_token %}
-            {{ form }}
-            <input class="btn btn-primary" type="submit" value="Submit">
-        </form>
-        {% if error_bid %}
-            Invalid bid! Bid must be at least equal to the starting bid and must be greater than the current price.
-        {% endif %}
-    </p>
+    {% if listing.active %}
+        <p>
+            <form action="{% url 'create_bid' listing.id %}" method="post">
+                {% csrf_token %}
+                {{ bidding_form }}
+                <input class="btn btn-primary" type="submit" value="Submit">
+            </form>
+            {% if error_bid %}
+                Invalid bid! Bid must be at least equal to the starting bid and must be greater than the current price.
+            {% endif %}
+        </p>
+    {% endif %}
+
     <p>
         <h4>Starting Bid</h4>
         ${{ listing.starting_bid }}
@@ -45,5 +64,30 @@
         <h4>Seller</h4>
         {{ listing.seller }}
     </p>
+
+    <div>
+        <h4>Comments</h4>
+        <hr>
+        {% if user.is_authenticated %}
+            <p>
+                <form action="{% url 'comment' listing.id %}" method="post">
+                    {% csrf_token %}
+                    {{ comment_form }}
+                    <input class="btn btn-primary" type="submit" value="Submit">
+                </form>
+            </p>
+        {% endif %}
+
+        {% for comment in comments %}
+            <ul>
+                <li>
+                    <h6>{{ comment.author }}</h6>
+                    {{ comment.message }}
+                </li>
+            </ul>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
 
 {% endblock %}

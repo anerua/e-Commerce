@@ -13,7 +13,9 @@ class AuctionListing(models.Model):
     current_price = models.ForeignKey('Bid', on_delete=models.CASCADE, related_name="listings")
     image = models.URLField()
     category = models.CharField(max_length=64)
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="goods")
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
+    comments = models.ManyToManyField('Comment', blank=True, related_name="listings")
+    active = models.BooleanField(default=True)
     
 
     def __str__(self):
@@ -25,5 +27,6 @@ class Bid(models.Model):
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids", null=True)
 
 
-class Comment():
-    pass
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    message = models.TextField()
