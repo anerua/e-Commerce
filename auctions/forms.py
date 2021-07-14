@@ -7,3 +7,6 @@ class ListingForm(forms.Form):
     image = forms.URLField()
     category = forms.CharField(max_length=64)
 
+
+class BiddingForm(forms.Form):
+    new_bid = forms.IntegerField(label='Your Bid')

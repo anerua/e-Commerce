@@ -21,7 +21,17 @@
     </p>
     <p>
         <h4>Current Price</h4>
-        ${{ listing.starting_bid }}
+        ${{ listing.current_price.bid }}
+    </p>
+    <p>
+        <form action="{% url 'create_bid' listing.id %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </form>
+        {% if error_bid %}
+            Invalid bid! Bid must be at least equal to the starting bid and must be greater than the current price.
+        {% endif %}
     </p>
     <p>
         <h4>Starting Bid</h4>

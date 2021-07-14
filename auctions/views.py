@@ -5,8 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, AuctionListing
-from .forms import ListingForm
+from .models import User, AuctionListing, Bid
+from .forms import ListingForm, BiddingForm
 
 
 def index(request):
@@ -50,7 +50,10 @@ def create_listing(request):
             image = request.POST['image']
             category = request.POST['category']
             seller = request.user
-            auction_listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category, seller=seller)
+            NULL_BID = Bid(bid=0)
+            NULL_BID.save()
+            current_price = NULL_BID
+            auction_listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category, seller=seller, current_price=current_price)
             auction_listing.save()
             auction_listings = AuctionListing.objects.all()
             return render(request, "auctions/index.html", {
@@ -83,9 +86,35 @@ def listing(request, listing_id, watching=0):
     else:
         if request.user.is_authenticated:
             watching = (item in request.user.watchlist.all())
+    form = BiddingForm()
     return render(request, "auctions/listing.html", {
         "listing": item,
-        "watching": int(watching)
+        "watching": int(watching),
+        "form": form,
+        "error_bid": False
+    })
+
+
+def create_bid(request, listing_id):
+    current_listing = AuctionListing.objects.get(pk=listing_id)
+    watching = (current_listing in request.user.watchlist.all())
+    error_bid = False
+    if request.method == 'POST':
+        new_bid = int(request.POST['new_bid'])
+        if new_bid >= current_listing.starting_bid and new_bid > int(current_listing.current_price.bid):
+            # create bid
+            valid_bid = Bid(bid=new_bid, bidder=request.user)
+            valid_bid.save()
+            current_listing.current_price = valid_bid
+            current_listing.save()
+        else:
+            error_bid = True
+    form = BiddingForm()
+    return render(request, "auctions/listing.html", {
+        "listing": current_listing,
+        "watching": int(watching),
+        "form": form,
+        "error_bid": error_bid
     })
 
 
