@@ -161,9 +161,9 @@ def watchlist(request):
     Display all of the listings that a user has added to their watchlist.
     Clicking on any of those listings should take the user to that listing's page.
     """
-    auction_listings = AuctionListing.objects.all()
-    return render(request, "auctions/index.html", {
-        "auction_listings": auction_listings
+    avail_listings = request.user.watchlist.all()
+    return render(request, "auctions/watchlist.html", {
+        "avail_listings": avail_listings
     })
 
 

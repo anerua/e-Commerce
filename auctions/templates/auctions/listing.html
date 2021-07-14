@@ -39,7 +39,7 @@
         <h4>Current Price</h4>
         ${{ listing.current_price.bid }}
     </p>
-    {% if listing.active %}
+    {% if listing.active and user.is_authenticated %}
         <p>
             <form action="{% url 'create_bid' listing.id %}" method="post">
                 {% csrf_token %}
