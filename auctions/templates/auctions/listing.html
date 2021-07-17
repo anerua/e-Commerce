@@ -6,7 +6,7 @@
         {{ listing.image }}
     </p>
     {% if user.is_authenticated %}
-        <form action="{% url 'listing' listing_id=listing.id watching=watching %}" method="post">
+        <form action="{% url 'toggle_watchlist' listing_id=listing.id %}" method="post">
             {% csrf_token %}
             {% if watching %}
                 <input class="btn btn-primary" type="submit" value="Remove from watchlist">
@@ -56,10 +56,13 @@
         <h4>Starting Bid</h4>
         ${{ listing.starting_bid }}
     </p>
-    <p>
-        <h4>Category</h4>
-        {{ listing.category }}
-    </p>
+    
+    {% if listing.category %}
+        <p>
+            <h4>Category</h4>
+            {{ listing.category }}
+        </p>
+    {% endif %}
     <p>
         <h4>Seller</h4>
         {{ listing.seller }}

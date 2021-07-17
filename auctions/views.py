@@ -22,14 +22,14 @@ def index(request):
 
 
 def categories(request):
-    avail_categories = AuctionListing.objects.values_list('category', flat=True).distinct().order_by()
+    avail_categories = AuctionListing.objects.values_list('category', flat=True).distinct().order_by().exclude(category='').filter(active=True)
     return render(request, "auctions/categories.html", {
         "categories": avail_categories
     })
 
 
 def category_listing(request, category):
-    avail_listings = AuctionListing.objects.filter(category=category)
+    avail_listings = AuctionListing.objects.filter(category=category, active=True)
     return render(request, "auctions/category_listing.html", {
         "category": category,
         "avail_listings": avail_listings
@@ -50,70 +50,28 @@ def create_listing(request):
             image = request.POST['image']
             category = request.POST['category']
             seller = request.user
+
             NULL_BID = Bid(bid=0)
             NULL_BID.save()
             current_price = NULL_BID
-            auction_listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category, seller=seller, current_price=current_price)
-            auction_listing.save()
-            auction_listings = AuctionListing.objects.all()
-            return render(request, "auctions/index.html", {
-                "auction_listings": auction_listings
-            })
+
+            new_listing = AuctionListing(title=title, description=description, starting_bid=starting_bid, image=image, category=category, seller=seller, current_price=current_price)
+            new_listing.save()
+
+            return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": new_listing.id}))
     else:
         form = ListingForm()
-    return render(request, 'auctions/new_listing.html', {
-        'form': form
-    })
-
-    auction_listings = AuctionListing.objects.all()
-    return render(request, "auctions/index.html", {
-        "auction_listings": auction_listings
-    })
+        return render(request, 'auctions/new_listing.html', {
+            'form': form
+        })
 
 
-def listing(request, listing_id, watching=0):
-    """
-    Users should be able to view all details about the listing, including current listing price
-    """
+def listing(request, listing_id, error_bid=0):
     current_listing = AuctionListing.objects.get(pk=listing_id)
-    if request.method == 'POST':
-        if watching:
-            request.user.watchlist.remove(current_listing)
-            watching = not watching
-        else:
-            request.user.watchlist.add(current_listing)
-            watching = not watching
-    else:
-        if request.user.is_authenticated:
-            watching = (current_listing in request.user.watchlist.all())
+    watching = request.user in current_listing.watchlist.all()
     return render(request, "auctions/listing.html", {
         "listing": current_listing,
-        "watching": int(watching),
-        "bidding_form": BiddingForm(),
-        "comment_form": CommentForm(),
-        "comments": current_listing.comments.all(),
-        "error_bid": False
-    })
-
-
-def create_bid(request, listing_id):
-    current_listing = AuctionListing.objects.get(pk=listing_id)
-    watching = (current_listing in request.user.watchlist.all())
-    error_bid = False
-    if request.method == 'POST':
-        new_bid = int(request.POST['new_bid'])
-        if new_bid >= current_listing.starting_bid and new_bid > int(current_listing.current_price.bid):
-            # create bid
-            valid_bid = Bid(bid=new_bid, bidder=request.user)
-            valid_bid.save()
-            current_listing.current_price = valid_bid
-            current_listing.save()
-        else:
-            error_bid = True
-
-    return render(request, "auctions/listing.html", {
-        "listing": current_listing,
-        "watching": int(watching),
+        "watching": watching,
         "bidding_form": BiddingForm(),
         "comment_form": CommentForm(),
         "comments": current_listing.comments.all(),
@@ -121,39 +79,52 @@ def create_bid(request, listing_id):
     })
 
 
-def close_bid(request, listing_id):
-    current_listing = AuctionListing.objects.get(pk=listing_id)
-    watching = (current_listing in request.user.watchlist.all())
+def toggle_watchlist(request, listing_id):
     if request.method == 'POST':
+        current_listing = AuctionListing.objects.get(pk=listing_id)
+
+        # if user is in listing watchlist, remove them. Otherwise, include them
+        if request.user in current_listing.watchlist.all():
+            current_listing.watchlist.remove(request.user)
+        else:
+            current_listing.watchlist.add(request.user)    
+
+    return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id}))
+
+
+def create_bid(request, listing_id):
+    if request.method == 'POST':
+        current_listing = AuctionListing.objects.get(pk=listing_id)
+
+        new_bid = int(request.POST['new_bid'])    # Get the user's bid
+
+        # if new bid meets criteria, save. Otherwise, return error code
+        if new_bid >= current_listing.starting_bid and new_bid > int(current_listing.current_price.bid):
+            valid_bid = Bid(bid=new_bid, bidder=request.user)
+            valid_bid.save()
+            current_listing.current_price = valid_bid
+            current_listing.save()
+        else:
+            return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id, "error_bid": 1}))
+
+    return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id}))
+
+
+def close_bid(request, listing_id):
+    if request.method == 'POST':
+        current_listing = AuctionListing.objects.get(pk=listing_id)
         current_listing.active = False
         current_listing.save()
-
-    return render(request, "auctions/listing.html", {
-        "listing": current_listing,
-        "watching": int(watching),
-        "bidding_form": BiddingForm(),
-        "comment_form": CommentForm(),
-        "comments": current_listing.comments.all(),
-        "error_bid": False
-    })        
+    return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id}))
 
 
 def comment(request, listing_id):
-    current_listing = AuctionListing.objects.get(pk=listing_id)
-    watching = (current_listing in request.user.watchlist.all())
     if request.method == 'POST':
+        current_listing = AuctionListing.objects.get(pk=listing_id)
         new_comment = Comment(author=request.user, message=request.POST['message'])
         new_comment.save()
         current_listing.comments.add(new_comment)
-
-    return render(request, "auctions/listing.html", {
-        "listing": current_listing,
-        "watching": int(watching),
-        "bidding_form": BiddingForm(),
-        "comment_form": CommentForm(),
-        "comments": current_listing.comments.all(),
-        "error_bid": False
-    })        
+    return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id}))
 
 
 def watchlist(request):

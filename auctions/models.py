@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    watchlist = models.ManyToManyField('AuctionListing', blank=True, related_name="watchers")
+    pass
 
 
 class AuctionListing(models.Model):
@@ -16,6 +16,7 @@ class AuctionListing(models.Model):
     seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
     comments = models.ManyToManyField('Comment', blank=True, related_name="listings")
     active = models.BooleanField(default=True)
+    watchlist = models.ManyToManyField(User, blank=True, related_name="watchlist")
     
 
     def __str__(self):
