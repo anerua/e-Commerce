@@ -15,7 +15,7 @@ def index(request):
     For each active listing, this page should display (at minimum)
     the title, description, current price, and photo (if one exists for the listing)
     """
-    auction_listings = AuctionListing.objects.all()
+    auction_listings = AuctionListing.objects.filter(active=True)
     return render(request, "auctions/index.html", {
         "auction_listings": auction_listings
     })
