@@ -1,3 +1,7 @@
 body {
     padding: 10px;
+
+    /* Show that nav bar is fixed to the top */
+    min-height: 75rem;
+    padding-top: 4.5rem;
 }
