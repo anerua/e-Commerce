@@ -6,8 +6,32 @@
 
     <form action="{% url 'create_listing' %}" method="post">
         {% csrf_token %}
-        {{ form }}
-        <input class="btn btn-primary" type="submit" value="Submit">
+        <div class="mb-3">
+            <label class="form-label">Title*</label>
+            {{ form.title }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description*</label>
+            {{ form.description }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Starting Bid*</label>
+            <div class="input-group mb-3">
+                <span class="input-group-text">$</span>
+                {{ form.starting_bid }}
+                <span class="input-group-text">.00</span>
+            </div> 
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            {{ form.image }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            {{ form.category }}
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+        
     </form>
 
 {% endblock %}

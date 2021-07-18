@@ -2,35 +2,57 @@
 
 {% block body %}
     <h2>{{ listing.title }}</h2>
-    <p>
-        {{ listing.image }}
-    </p>
+
+    <div class="bd-example">
+        <svg class="bd-placeholder-img bd-placeholder-img-lg img-fluid" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Responsive image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"/><text x="50%" y="50%" fill="#dee2e6" dy=".3em">{{ listing.image }}</text></svg>
+
+    </div>
+
     {% if user.is_authenticated %}
-        <form action="{% url 'toggle_watchlist' listing_id=listing.id %}" method="post">
-            {% csrf_token %}
-            {% if watching %}
-                <input class="btn btn-primary" type="submit" value="Remove from watchlist">
-            {% else %}
-                <input class="btn btn-primary" type="submit" value="Add to watchlist">
-            {% endif %}
-        </form>
+    <p>
+        <div>
+            <form action="{% url 'toggle_watchlist' listing_id=listing.id %}" method="post">
+                {% csrf_token %}
+                {% if watching %}
+                    <button class="btn btn-primary" type="submit">Remove from watchlist</button>
+                {% else %}
+                    <button class="btn btn-primary" type="submit">Add to watchlist</button>
+                {% endif %}
+            </form>
+        </div>
+        
         {% if listing.active %}
             {% if user == listing.seller %}
             <p>
                 <form action="{% url 'close_bid' listing.id %}" method="POST">
                     {% csrf_token %}
-                    <input class="btn btn-primary" type="submit" value="Close Listing">
+                    <button class="btn btn-primary" type="submit">Close Listing</button>
                 </form>
             </p>
             {% endif %}
         {% else %}
-                <p>Listing closed. 
-                    {% if user == listing.current_price.bidder %}
-                        You won this bid.
-                    {% endif %}
-                </p>
+            {% if user == listing.seller %}
+            <p>
+                <form>
+                    <fieldset disabled>
+                        <div>
+                            <button class="btn btn-primary" type="submit">Close Listing</button>
+                        </div>
+                        
+                    </fieldset>
+                </form>
+            <p>
+            
+            {% endif %}
+            <p>Listing closed. 
+                {% if user == listing.current_price.bidder %}
+                    You won this bid.
+                {% endif %}
+            </p>
         {% endif %}
+        </p>
     {% endif %}
+
     <p>
         <h4>Description</h4>
         {{ listing.description }}
