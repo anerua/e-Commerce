@@ -97,7 +97,10 @@
             <p>
                 <form action="{% url 'comment' listing.id %}" method="post">
                     {% csrf_token %}
-                    {{ comment_form }}
+                    <div class="input-group">
+                        <span class="input-group-text">Your comment</span>
+                        {{ comment_form.message }}
+                    </div>
                     <input class="btn btn-primary" type="submit" value="Submit">
                 </form>
             </p>
