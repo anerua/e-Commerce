@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>{{ listing.title }}</h2>
+    <p class="display-5">{{ listing.title }}</p>
 
     <div class="bd-example">
         <svg class="bd-placeholder-img bd-placeholder-img-lg img-fluid" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Responsive image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"/><text x="50%" y="50%" fill="#dee2e6" dy=".3em">{{ listing.image }}</text></svg>
@@ -54,11 +54,11 @@
     {% endif %}
 
     <p>
-        <h4>Description</h4>
+        <p class="display-6">Description</p>
         {{ listing.description }}
     </p>
     <p>
-        <h4>Current Price</h4>
+        <p class="display-6">Current Price</p>
         ${{ listing.current_price.bid }}
     </p>
     {% if listing.active and user.is_authenticated %}
@@ -75,23 +75,23 @@
     {% endif %}
 
     <p>
-        <h4>Starting Bid</h4>
+        <p class="display-6">Starting Bid</p>
         ${{ listing.starting_bid }}
     </p>
     
     {% if listing.category %}
         <p>
-            <h4>Category</h4>
+            <p class="display-6">Category</p>
             {{ listing.category }}
         </p>
     {% endif %}
     <p>
-        <h4>Seller</h4>
+        <p class="display-6">Seller</p>
         {{ listing.seller }}
     </p>
 
     <div>
-        <h4>Comments</h4>
+        <p class="display-6">Comments</p>
         <hr>
         {% if user.is_authenticated %}
             <p>
