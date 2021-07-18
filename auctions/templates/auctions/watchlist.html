@@ -1,23 +1,25 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>{{ category }}</h2>
+    <h2>Watchlist</h2>
 
-    <ul>
+    <div class="row  row-cols-1 row-cols-md-4 g-4">
         {% for listing in avail_listings %}
-            <li>
-                <h3><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></h3>
-                <p>
-                    <em>Description:</em> {{ listing.description }}<br>
-                    <em>Starting Bid:</em> ${{ listing.starting_bid}}<br>
-                    <em>Image Link:</em> {{ listing.image }}<br>
-                    <em>Category:</em> {{ listing.category }}<br>
-                    <em>Seller:</em> {{ listing.seller }}
-                </p>
-            </li>
+            <div class="col">
+                <div class="card">
+                    <svg class="bd-placeholder-img card-img-top" width="100%" height="180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"/><text x="50%" y="50%" fill="#dee2e6" dy=".3em">{{ listing.image }}</text></svg>
+
+                    <div class="card-body">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <p class="card-text">{{ listing.description }}</p>
+                    <p class="card-footer">${{ listing.current_price.bid }}</p>
+                    <a href="{% url 'listing' listing.id %}" class="btn btn-primary">View</a>
+                    </div>
+                </div>
+            </div>
         {% empty %}
-            <li>No listings in watchlist.</li>
+            <p>No listings in watchlist.</p>
         {% endfor %}
-    </ul>
+    </div>
 
 {% endblock %}
