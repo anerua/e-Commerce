@@ -12,7 +12,7 @@
                     <div class="card-body">
                     <h5 class="card-title">{{ listing.title }}</h5>
                     <p class="card-text">{{ listing.description }}</p>
-                    <p class="card-footer">${{ listing.current_price.bid }}</p>
+                    <p class="card-text">${{ listing.current_price.bid }}</p>
                     <a href="{% url 'listing' listing.id %}" class="btn btn-primary">View</a>
                     </div>
                 </div>
