@@ -2,10 +2,10 @@
 
 {% block body %}
     <p class="display-5">Categories</p>
+
     <hr>
 
-
-    {% if categories.isEmpty %}
+    {% if not categories %}
         <h3 class="display-6">No available category.</h3>
     {% else %}
     <div class="row  row-cols-1 row-cols-md-3 g-4">
