@@ -5,9 +5,6 @@
 
     <hr>
 
-    {% if not categories %}
-        <h3 class="display-6">No available category.</h3>
-    {% else %}
     <div class="row  row-cols-1 row-cols-md-3 g-4">
         {% for category in categories %}
         <div class="col">
@@ -18,9 +15,9 @@
                 </div>
             </div>
         </div>
-        
+        {% empty %}
+            <p>No available category.</p>
         {% endfor %}
     </div>
-    {% endif %}
 
 {% endblock %}
