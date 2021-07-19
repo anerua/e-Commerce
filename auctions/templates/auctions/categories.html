@@ -2,13 +2,25 @@
 
 {% block body %}
     <p class="display-5">Categories</p>
+    <hr>
 
-    <ul>
+
+    {% if categories.isEmpty %}
+        <h3 class="display-6">No available category.</h3>
+    {% else %}
+    <div class="row  row-cols-1 row-cols-md-3 g-4">
         {% for category in categories %}
-            <li><a href="{% url 'category_listing' category %}">{{ category }}</a></li>
-        {% empty %}
-            <li>No available category.</li>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <p class="display-6">{{ category }}</p>
+                    <a href="{% url 'category_listing' category %}" class="btn btn-primary">Browse</a>
+                </div>
+            </div>
+        </div>
+        
         {% endfor %}
-    </ul>
+    </div>
+    {% endif %}
 
 {% endblock %}

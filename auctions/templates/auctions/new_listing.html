@@ -4,6 +4,8 @@
 
     <p class="display-5">Create Listing</p>
 
+    <hr>
+
     <form action="{% url 'create_listing' %}" method="post">
         {% csrf_token %}
         <div class="mb-3">
