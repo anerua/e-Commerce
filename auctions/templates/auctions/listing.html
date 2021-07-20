@@ -3,30 +3,31 @@
 {% block body %}
     <p class="display-5">{{ listing.title }}</p>
 
-    <div class="bd-example">
-        <svg class="bd-placeholder-img bd-placeholder-img-lg img-fluid" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Responsive image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"/><text x="50%" y="50%" fill="#dee2e6" dy=".3em">{{ listing.image }}</text></svg>
-    </div>
-    
-
     {% if user.is_authenticated %}
-    <p>
-        <div>
+        <div class="bd-example">
             <form action="{% url 'toggle_watchlist' listing_id=listing.id %}" method="post">
                 {% csrf_token %}
                 {% if watching %}
-                    <button class="btn btn-outline-light" type="submit"><i class="heart fa fa-heart" style="font-size: 25px; color: green;"></i></button>
+                    <button class="btn btn-outline-light" type="submit"><i class="heart fa fa-heart" style="font-size: 25px; color: red;"></i></button>
                 {% else %}
-                    <button class="btn btn-outline-light" type="submit"><i class="heart fa fa-heart-o" style="font-size: 25px; color: green;"></i></button>
+                    <button class="btn btn-outline-light" type="submit"><i class="heart fa fa-heart-o" style="font-size: 25px; color: red;"></i></button>
                 {% endif %}
             </form>
         </div>
-        
+    {% endif %}
+
+    <div class="bd-example">
+        <svg class="bd-placeholder-img bd-placeholder-img-lg img-fluid" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Responsive image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"/><text x="50%" y="50%" fill="#dee2e6" dy=".3em">{{ listing.image }}</text></svg>
+    </div>
+
+    {% if user.is_authenticated %}
+    <p> 
         {% if listing.active %}
             {% if user == listing.seller %}
             <p>
                 <form action="{% url 'close_bid' listing.id %}" method="POST">
                     {% csrf_token %}
-                    <button class="btn btn-primary" type="submit">Close Listing</button>
+                    <button class="btn btn-danger" type="submit">Close Listing</button>
                 </form>
             </p>
             {% endif %}
@@ -36,21 +37,22 @@
                 <form>
                     <fieldset disabled>
                         <div>
-                            <button class="btn btn-primary" type="submit">Close Listing</button>
+                            <button class="btn btn-danger" type="submit">Close Listing</button>
                         </div>
                         
                     </fieldset>
                 </form>
             <p>
-            
             {% endif %}
-            <p>Listing closed. 
+
+            <p>
+                <span class="badge rounded-pill bg-info text-dark">Listing closed</span>
                 {% if user == listing.current_price.bidder %}
-                    You won this bid.
+                    <span class="badge rounded-pill bg-success">Congrats! You won this bid</span>
                 {% endif %}
             </p>
         {% endif %}
-        </p>
+    </p>
     {% endif %}
 
     <p>
