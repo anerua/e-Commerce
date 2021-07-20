@@ -9,12 +9,16 @@
         {% for listing in avail_listings %}
             <div class="col">
                 <div class="card">
-                    <svg class="bd-placeholder-img card-img-top" width="100%" height="180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"/><text x="50%" y="50%" fill="#dee2e6" dy=".3em">{{ listing.image }}</text></svg>
+                    {% if listing.image %}
+                        <img src="{{ listing.image }}" alt="Product image" width="300" height="200">
+                    {% else %}
+                        <img src="../static/auctions/no_image.jpg" alt="No image" width="300" height="200">
+                    {% endif %}
 
                     <div class="card-body">
                     <h5 class="card-title">{{ listing.title }}</h5>
                     <p class="card-text">{{ listing.description }}</p>
-                    <p class="card-footer">${{ listing.current_price.bid }}</p>
+                    <p class="card-text"><strong>${{ listing.current_price.bid }}</strong></p>
                     <a href="{% url 'listing' listing.id %}" class="btn btn-primary">View</a>
                     </div>
                 </div>
