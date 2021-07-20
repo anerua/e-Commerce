@@ -10,11 +10,6 @@ from .forms import ListingForm, BiddingForm, CommentForm
 
 
 def index(request):
-    """
-    Let users view all the currently active auction listings.
-    For each active listing, this page should display (at minimum)
-    the title, description, current price, and photo (if one exists for the listing)
-    """
     auction_listings = AuctionListing.objects.filter(active=True)
     return render(request, "auctions/index.html", {
         "auction_listings": auction_listings
@@ -38,9 +33,6 @@ def category_listing(request, category):
 
 @login_required(login_url='auctions/login.html')
 def create_listing(request):
-    # Form to create a listing. Specify title, text-based description, and starting bid.
-    # Optionally can provide a URL for an image for the listing
-    # and/or a category (e.g. Fashion, Toys, Electronics, Home, etc)
     if request.method == 'POST':
         form = ListingForm(request.POST)
         if form.is_valid():
@@ -60,9 +52,8 @@ def create_listing(request):
 
             return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": new_listing.id}))
     else:
-        form = ListingForm()
         return render(request, 'auctions/new_listing.html', {
-            'form': form
+            'form': ListingForm()
         })
 
 
@@ -83,7 +74,6 @@ def toggle_watchlist(request, listing_id):
     if request.method == 'POST':
         current_listing = AuctionListing.objects.get(pk=listing_id)
 
-        # if user is in listing watchlist, remove them. Otherwise, include them
         if request.user in current_listing.watchlist.all():
             current_listing.watchlist.remove(request.user)
         else:
@@ -95,10 +85,8 @@ def toggle_watchlist(request, listing_id):
 def create_bid(request, listing_id):
     if request.method == 'POST':
         current_listing = AuctionListing.objects.get(pk=listing_id)
+        new_bid = int(request.POST['new_bid'])
 
-        new_bid = int(request.POST['new_bid'])    # Get the user's bid
-
-        # if new bid meets criteria, save. Otherwise, return error code
         if new_bid >= current_listing.starting_bid and new_bid > int(current_listing.current_price.bid):
             valid_bid = Bid(bid=new_bid, bidder=request.user)
             valid_bid.save()
@@ -128,10 +116,6 @@ def comment(request, listing_id):
 
 
 def watchlist(request):
-    """
-    Display all of the listings that a user has added to their watchlist.
-    Clicking on any of those listings should take the user to that listing's page.
-    """
     avail_listings = request.user.watchlist.all()
     return render(request, "auctions/watchlist.html", {
         "avail_listings": avail_listings
