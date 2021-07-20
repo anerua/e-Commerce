@@ -5,8 +5,8 @@
 
     <div class="bd-example">
         <svg class="bd-placeholder-img bd-placeholder-img-lg img-fluid" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Responsive image" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"/><text x="50%" y="50%" fill="#dee2e6" dy=".3em">{{ listing.image }}</text></svg>
-
     </div>
+    
 
     {% if user.is_authenticated %}
     <p>
@@ -14,9 +14,9 @@
             <form action="{% url 'toggle_watchlist' listing_id=listing.id %}" method="post">
                 {% csrf_token %}
                 {% if watching %}
-                    <button class="btn btn-primary" type="submit">Remove from watchlist</button>
+                    <button class="btn btn-outline-light" type="submit"><i class="heart fa fa-heart" style="font-size: 25px; color: green;"></i></button>
                 {% else %}
-                    <button class="btn btn-primary" type="submit">Add to watchlist</button>
+                    <button class="btn btn-outline-light" type="submit"><i class="heart fa fa-heart-o" style="font-size: 25px; color: green;"></i></button>
                 {% endif %}
             </form>
         </div>
