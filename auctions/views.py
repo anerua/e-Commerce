@@ -66,7 +66,7 @@ def create_listing(request):
         })
 
 
-def listing(request, listing_id, error_bid=0):
+def listing(request, listing_id, good_bid=1):
     current_listing = AuctionListing.objects.get(pk=listing_id)
     watching = request.user in current_listing.watchlist.all()
     return render(request, "auctions/listing.html", {
@@ -75,7 +75,7 @@ def listing(request, listing_id, error_bid=0):
         "bidding_form": BiddingForm(),
         "comment_form": CommentForm(),
         "comments": current_listing.comments.all(),
-        "error_bid": error_bid
+        "good_bid": good_bid
     })
 
 
@@ -105,9 +105,9 @@ def create_bid(request, listing_id):
             current_listing.current_price = valid_bid
             current_listing.save()
         else:
-            return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id, "error_bid": 1}))
+            return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id, "good_bid": 0}))
 
-    return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id}))
+    return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": listing_id, "good_bid": 2}))
 
 
 def close_bid(request, listing_id):
